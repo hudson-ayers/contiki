@@ -183,6 +183,8 @@ void uip_log(char *msg);
  */
 static uint8_t *packetbuf_ptr;
 
+uint8_t sendCount = 0; //Hudson edit
+
 /**
  * packetbuf_hdr_len is the total length of (the processed) 6lowpan headers
  * (fragment headers, IPV6 or HC1, HC2, and HC1 and HC2 non compressed
@@ -1279,7 +1281,7 @@ output(const uip_lladdr_t *localdest)
 
   /* The MAC address of the destination of the packet */
   linkaddr_t dest;
-
+  printf("Hey hudson, you are in the link layer send in sicslowpan.c\n");
   /* init */
   uncomp_hdr_len = 0;
   packetbuf_hdr_len = 0;
@@ -1316,8 +1318,20 @@ output(const uip_lladdr_t *localdest)
    * packet. If the argument localdest is NULL, we are sending a
    * broadcast packet.
    */
+
+  // Begin Hudson edits
+  printf("localdest is: %d\n", localdest);
+
+  linkaddr_t destMac;
+  printf("linkaddr_size is %d\n", LINKADDR_SIZE);
+  static unsigned char tempMac[LINKADDR_SIZE] = {0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x2A};
+//  static unsigned char tempMac[LINKADDR_SIZE] = {0x50, 0x6b, 0x51, 0xcc, 0x87, 0xb8, 0x99, 0xce};
+  memcpy(destMac.u8, tempMac, LINKADDR_SIZE);
+
   if(localdest == NULL) {
-    linkaddr_copy(&dest, &linkaddr_null);
+    printf("Setting to broadcast address\n");
+    //linkaddr_copy(&dest, &linkaddr_null);
+    linkaddr_copy(&dest, &destMac); //Hudson
   } else {
     linkaddr_copy(&dest, (const linkaddr_t *)localdest);
   }
@@ -1484,6 +1498,11 @@ output(const uip_lladdr_t *localdest)
     packetbuf_set_datalen(uip_len - uncomp_hdr_len + packetbuf_hdr_len);
     send_packet(&dest);
   }
+  //exit(0);
+  if(sendCount > 1) {
+    while(1);
+  }
+  sendCount += 1;
   return 1;
 }
 

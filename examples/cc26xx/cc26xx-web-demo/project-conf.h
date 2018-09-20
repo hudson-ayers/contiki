@@ -33,13 +33,13 @@
 /*---------------------------------------------------------------------------*/
 /* Change to match your configuration */
 #define IEEE802154_CONF_PANID            0xABCD
-#define RF_CORE_CONF_CHANNEL                 25
+#define RF_CORE_CONF_CHANNEL                 26
 #define RF_BLE_CONF_ENABLED                   1
 /*---------------------------------------------------------------------------*/
 /* Enable/Disable Components of this Demo */
-#define CC26XX_WEB_DEMO_CONF_MQTT_CLIENT      1
-#define CC26XX_WEB_DEMO_CONF_6LBR_CLIENT      1
-#define CC26XX_WEB_DEMO_CONF_COAP_SERVER      1
+#define CC26XX_WEB_DEMO_CONF_MQTT_CLIENT      0
+#define CC26XX_WEB_DEMO_CONF_6LBR_CLIENT      0
+#define CC26XX_WEB_DEMO_CONF_COAP_SERVER      0
 #define CC26XX_WEB_DEMO_CONF_NET_UART         1
 
 /*
@@ -50,7 +50,7 @@
 #define CC26XX_WEB_DEMO_CONF_ADC_DEMO         0
 /*---------------------------------------------------------------------------*/
 /* Enable the ROM bootloader */
-#define ROM_BOOTLOADER_ENABLE                 1
+#define ROM_BOOTLOADER_ENABLE                 0
 /*---------------------------------------------------------------------------*/
 /*
  * Shrink the size of the uIP buffer, routing table and ND cache.

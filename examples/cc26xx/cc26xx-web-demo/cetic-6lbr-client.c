@@ -99,6 +99,7 @@ static void
 timeout_handler(void)
 {
   static int seq_id;
+  printf("timeout_handler called \n");
   char buf[MAX_PAYLOAD_LEN];
   int i;
   uip_ip6addr_t *globaladdr = NULL;
@@ -109,6 +110,7 @@ timeout_handler(void)
   uip_ds6_addr_t *addr_desc = uip_ds6_get_global(ADDR_PREFERRED);
   if(addr_desc != NULL) {
     globaladdr = &addr_desc->ipaddr;
+    printf("got at an addr_desc\n");
     dag = rpl_get_any_dag();
     if(dag) {
       uip_ipaddr_copy(&dest_addr, globaladdr);
@@ -119,38 +121,40 @@ timeout_handler(void)
 
   if(has_dest) {
     if(client_conn == NULL) {
-      PRINTF("UDP-CLIENT: address destination: ");
+      printf("hudson2\n");
+      printf("UDP-CLIENT: address destination: ");
       PRINT6ADDR(&dest_addr);
-      PRINTF("\n");
+      printf("\n");
       client_conn = udp_new(&dest_addr, UIP_HTONS(dest_port), NULL);
 
       if(client_conn != NULL) {
-        PRINTF("Created a connection with the server ");
+        printf("Created a connection with the server ");
         PRINT6ADDR(&client_conn->ripaddr);
-        PRINTF(" local/remote port %u/%u\n",
+        printf(" local/remote port %u/%u\n",
                UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
       } else {
-        PRINTF("Could not open connection\n");
+        printf("Could not open connection\n");
       }
     } else {
       if(memcmp(&client_conn->ripaddr, &dest_addr, sizeof(uip_ipaddr_t)) != 0) {
-        PRINTF("UDP-CLIENT: new address destination: ");
+        printf("UDP-CLIENT: new address destination: ");
         PRINT6ADDR(&dest_addr);
-        PRINTF("\n");
+        printf("\n");
         uip_udp_remove(client_conn);
         client_conn = udp_new(&dest_addr, UIP_HTONS(dest_port), NULL);
         if(client_conn != NULL) {
-          PRINTF("Created a connection with the server ");
+          printf("Created a connection with the server ");
           PRINT6ADDR(&client_conn->ripaddr);
-          PRINTF(" local/remote port %u/%u\n",
+          printf(" local/remote port %u/%u\n",
                  UIP_HTONS(client_conn->lport), UIP_HTONS(client_conn->rport));
         } else {
-          PRINTF("Could not open connection\n");
+          printf("Could not open connection\n");
         }
       }
     }
+    printf("has dest\n");
     if(client_conn != NULL) {
-      PRINTF("Client sending to: ");
+      printf("Client sending to: ");
       PRINT6ADDR(&client_conn->ripaddr);
       i = sprintf(buf, "%d | ", ++seq_id);
       dag = rpl_get_any_dag();
@@ -159,13 +163,13 @@ timeout_handler(void)
       } else {
         sprintf(buf + i, "(null)");
       }
-      PRINTF(" (msg: %s)\n", buf);
+      printf(" (msg: %s)\n", buf);
       uip_udp_packet_send(client_conn, buf, strlen(buf));
     } else {
-      PRINTF("No connection created\n");
+      printf("No connection created\n");
     }
   } else {
-    PRINTF("No address configured\n");
+    printf("No address configured\n");
   }
 }
 /*---------------------------------------------------------------------------*/
@@ -175,6 +179,8 @@ PROCESS_THREAD(cetic_6lbr_client_process, ev, data)
   PROCESS_BEGIN();
 
   printf("6LBR Client Process\n");
+  printf("hey hudson\n");
+  timeout_handler(); //added by hudson
 
   memset(&dest_addr, 0, sizeof(uip_ipaddr_t));
 

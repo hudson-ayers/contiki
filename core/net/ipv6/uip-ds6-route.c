@@ -682,14 +682,14 @@ uip_ds6_defrt_choose(void)
   for(d = list_head(defaultrouterlist);
       d != NULL;
       d = list_item_next(d)) {
-    PRINTF("Defrt, IP address ");
+    printf("Defrt, IP address ");
     PRINT6ADDR(&d->ipaddr);
-    PRINTF("\n");
+    printf("\n");
     bestnbr = uip_ds6_nbr_lookup(&d->ipaddr);
     if(bestnbr != NULL && bestnbr->state != NBR_INCOMPLETE) {
-      PRINTF("Defrt found, IP address ");
+      printf("Defrt found, IP address ");
       PRINT6ADDR(&d->ipaddr);
-      PRINTF("\n");
+      printf("\n");
       return &d->ipaddr;
     } else {
       addr = &d->ipaddr;
@@ -698,6 +698,7 @@ uip_ds6_defrt_choose(void)
       PRINTF("\n");
     }
   }
+  printf("addr still null\n");
   return addr;
 }
 /*---------------------------------------------------------------------------*/

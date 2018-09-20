@@ -19,6 +19,6 @@ CONTIKI_WITH_IPV6 = 1
 APPS += er-coap
 APPS += rest-engine
 APPS += mqtt
-
+CFLAGS += -g
 CONTIKI=../../..
 include $(CONTIKI)/Makefile.include

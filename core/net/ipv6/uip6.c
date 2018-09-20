@@ -952,6 +952,7 @@ uip_process(uint8_t flag)
 #endif /* UIP_TCP */
 #if UIP_UDP
   if(flag == UIP_UDP_SEND_CONN) {
+    printf("going to udp_send\n");  
     goto udp_send;
   }
 #endif /* UIP_UDP */
@@ -1552,12 +1553,14 @@ uip_process(uint8_t flag)
   UIP_UDP_APPCALL();
 
   udp_send:
-  PRINTF("In udp_send\n");
+  printf("In udp_send\n");
 
   if(uip_slen == 0) {
+    printf("slen is 0 error\n");
     goto drop;
   }
   uip_len = uip_slen + UIP_IPUDPH_LEN;
+  printf("in udp_send, uip_len is: %d\n", uip_len);
 
   /* For IPv6, the IP length field does not include the IPv6 IP header
      length. */
@@ -1587,6 +1590,7 @@ uip_process(uint8_t flag)
 #endif /* UIP_UDP_CHECKSUMS */
 
   UIP_STAT(++uip_stat.udp.sent);
+  printf("about to go to ip_send_nolen\n");
   goto ip_send_nolen;
 #endif /* UIP_UDP */
 
@@ -2307,7 +2311,7 @@ uip_process(uint8_t flag)
   UIP_IP_BUF->tcflow = 0x00;
   UIP_IP_BUF->flow = 0x00;
   send:
-  PRINTF("Sending packet with length %d (%d)\n", uip_len,
+  printf("Sending packet with length %d (%d)\n", uip_len,
       (UIP_IP_BUF->len[0] << 8) | UIP_IP_BUF->len[1]);
 
   UIP_STAT(++uip_stat.ip.sent);

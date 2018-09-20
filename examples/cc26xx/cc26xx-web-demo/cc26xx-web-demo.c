@@ -443,7 +443,7 @@ ping_parent(void)
   if(uip_ds6_get_global(ADDR_PREFERRED) == NULL) {
     return;
   }
-
+  printf("Sending ping\n");
   uip_icmp6_send(uip_ds6_defrt_choose(), ICMP6_ECHO_REQUEST, 0,
                  CC26XX_WEB_DEMO_ECHO_REQ_PAYLOAD_LEN);
 }

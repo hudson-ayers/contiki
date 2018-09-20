@@ -52,6 +52,8 @@ uip_udp_packet_send(struct uip_udp_conn *c, const void *data, int len)
 {
 #if UIP_UDP
   if(data != NULL && len <= (UIP_BUFSIZE - (UIP_LLH_LEN + UIP_IPUDPH_LEN))) {
+    printf("UIP UDP! hud\n");
+    printf("len in iup_udp_paket_send is %d\n", len);
     uip_udp_conn = c;
     uip_slen = len;
     memmove(&uip_buf[UIP_LLH_LEN + UIP_IPUDPH_LEN], data, len);
@@ -65,9 +67,12 @@ uip_udp_packet_send(struct uip_udp_conn *c, const void *data, int len)
 #endif /* UIP_IPV6_MULTICAST */
 
 #if NETSTACK_CONF_WITH_IPV6
+    printf("neststack conf with ipv6 - hud\n");
+    printf("Before calling tcpip_output uip_len is:%d\n", uip_len);
     tcpip_ipv6_output();
 #else
     if(uip_len > 0) {
+      printf("calling tcpip_output\n");
       tcpip_output();
     }
 #endif
@@ -82,8 +87,9 @@ uip_udp_packet_sendto(struct uip_udp_conn *c, const void *data, int len,
 {
   uip_ipaddr_t curaddr;
   uint16_t curport;
-
+  printf("Is address null? \n");
   if(toaddr != NULL) {
+    printf("no its not!\n");
     /* Save current IP addr/port. */
     uip_ipaddr_copy(&curaddr, &c->ripaddr);
     curport = c->rport;

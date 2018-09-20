@@ -77,12 +77,20 @@
 #define DEBUG DEBUG_NONE
 #include "net/ip/uip-debug.h"
 /*---------------------------------------------------------------------------*/
-#define REMOTE_PORT  7777
+#define REMOTE_PORT  7776
 #define MAX_MSG_SIZE  100
 
+//#define set_dest_addr() uip_ip6addr(&remote_addr, \
+//                                    0xFE80, 0x0000, 0x0000, 0x0000, \
+//                                    0x440f, 0x2f66, 0x9a2c, 0x0e6d);
+
+//#define set_dest_addr() uip_ip6addr(&remote_addr, \
+//                                    0xFE80, 0x0000, 0x0000, 0x0000, \
+//                                    0x282A, 0x2A2A, 0x2A2A, 0x2A2A);
 #define set_dest_addr() uip_ip6addr(&remote_addr, \
-                                    0xBBBB, 0x0000, 0x0000, 0x0000, \
-                                    0x3E07, 0x54FF, 0xFE74, 0x4885);
+                                    0xFF02, 0x0000, 0x0000, 0x0000, \
+                                    0x0000, 0x0001, 0xFFAA, 0xABCD); //For multicast compression testing
+
 /*---------------------------------------------------------------------------*/
 #define ADDRESS_CONVERSION_OK       1
 #define ADDRESS_CONVERSION_ERROR    0
@@ -241,7 +249,7 @@ set_config_defaults(void)
 {
   /* Set a hard-coded destination address to start with */
   set_dest_addr();
-
+  printf("Address defaults getting set\n");
   /* Set config defaults */
   cc26xx_web_demo_ipaddr_sprintf(cc26xx_web_demo_config.net_uart.remote_address,
                                  NET_UART_IP_ADDR_STRLEN, &remote_addr);
@@ -259,7 +267,7 @@ PROCESS_THREAD(net_uart_process, ev, data)
 
   udp_conn = udp_new(NULL, UIP_HTONS(0), NULL);
   udp_bind(udp_conn, UIP_HTONS(REMOTE_PORT));
-
+  printf("UDP port bound\n");
   if(udp_conn == NULL) {
     printf("No UDP connection available, exiting the process!\n");
     PROCESS_EXIT();
@@ -271,6 +279,24 @@ PROCESS_THREAD(net_uart_process, ev, data)
 
   while(1) {
 
+    //Begin Hudson Paste insert
+
+    printf("In this while loop\n");
+    memset(buffer, 0, MAX_MSG_SIZE);
+    data = "hey its hudson sending a longish message just to check";
+    /* We need to add a line feed, thus never fill the entire buffer */
+    msg_len = MIN(strlen(data), MAX_MSG_SIZE - 1);
+    printf("msg_len is %d\n", msg_len);
+    memcpy(buffer, data, msg_len);
+    /* Add a line feed */
+    buffer[msg_len] = 0x0A;
+    msg_len++;
+    printf("Sending packet now\n");
+    uip_udp_packet_sendto(
+      udp_conn, buffer, msg_len, &remote_addr,
+       UIP_HTONS(cc26xx_web_demo_config.net_uart.remote_port));
+    
+    // End Hudson Paste
     PROCESS_YIELD();
 
     if(ev == serial_line_event_message) {
@@ -278,6 +304,7 @@ PROCESS_THREAD(net_uart_process, ev, data)
        * If the message contains a new IP address, save it and go back to
        * waiting.
        */
+      printf("got a message from you\n");
       if(set_new_ip_address((char *)data) == ADDRESS_CONVERSION_ERROR) {
         /* Not an IP address in the message. Send to current destination */
         memset(buffer, 0, MAX_MSG_SIZE);
